@@ -12,11 +12,27 @@ import AdminDashboard from "./components/AdminDashboard.jsx";
 import RegisterPage from "./components/RegisterPage.jsx";
 import Footer from "./components/Footer.jsx";
 
-function ScrollToTop() {
-  const { pathname } = useLocation();
+function ScrollManager() {
+  const { pathname, hash, key } = useLocation();
+
   useEffect(() => {
+    // If there's a hash (like #schedule), scroll to that section.
+    if (hash) {
+      const id = hash.replace("#", "");
+      const el = document.getElementById(id);
+      if (el) {
+        // Small delay so the page has time to render/paint on route change.
+        const t = setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 60);
+        return () => clearTimeout(t);
+      }
+    }
+
+    // Otherwise scroll to the top.
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [pathname]);
+  }, [pathname, hash, key]);
+
   return null;
 }
 
@@ -34,7 +50,7 @@ function Home() {
 export default function App() {
   return (
     <>
-      <ScrollToTop />
+      <ScrollManager />
       <Header />
       <main>
         <Routes>
